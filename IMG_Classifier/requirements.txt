@@ -5,3 +5,4 @@ pandas
 scikit-learn
 streamlit
 altair<5
+standard-imghdr
