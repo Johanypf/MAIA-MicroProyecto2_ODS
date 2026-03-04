@@ -9,7 +9,7 @@ from src.ModelController import ModelController
 ### Setup and configuration
 
 st.set_page_config(
-    layout="centered", page_title="Image Classifier", page_icon="❄️"
+    layout="centered", page_title="Prediccion de ODS", page_icon="🌍"
 )
 
 ### My vars
