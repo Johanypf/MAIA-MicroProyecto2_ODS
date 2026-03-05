@@ -41,8 +41,12 @@ class ModelController:
             X = processing_text(text)
 
             y_pred = self.model.predict([X])
+            y_scores = self.model.decision_function([X])  
 
-            return text, y_pred[0]
+            classes = self.model.classes_
+
+
+            return text, y_pred[0], y_scores[0], classes
 
         except Exception as e:
             raise Exception(f"Error during prediction: {e}")
