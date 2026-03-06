@@ -60,7 +60,7 @@ if input_text is not None:
             
             data = pd.DataFrame({
                 "ODS": classes,
-                "valor": probs[0]
+                "valor": probs[0].flatten()
             })
 
         else:
