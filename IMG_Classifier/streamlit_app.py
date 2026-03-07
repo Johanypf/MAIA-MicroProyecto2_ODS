@@ -52,12 +52,11 @@ if input_text is not None:
         exp_scores = np.exp(y_scores_stable)
         probs = exp_scores / np.sum(exp_scores)
 
-        # Convertimos a listas puras de Python (evita errores de tipos en Cloud)
-        eje_x = [f"ODS {int(c)}" for c in classes]
+        eje_x = [f" {int(c)}" for c in classes]
         eje_y = [float(p) for p in probs]
         textos = [f"{p*100:.1f}%" for p in probs]
 
-        # 2. Construcción manual de la gráfica (graph_objects)
+      
         fig = go.Figure(data=[
             go.Bar(
                 x=eje_x,
@@ -72,30 +71,28 @@ if input_text is not None:
             )
         ])
 
-        # 3. Ajustes de diseño obligatorios para el servidor
+    
         fig.update_layout(
             title="Probabilidades de Predicción",
             xaxis=dict(
-                type='category',      # Evita que intente hacer una línea numérica
+                title="Objetivos de Desarrollo Sostenible (ODS)",
+                type='category',   
                 tickangle=-45
             ),
             yaxis=dict(
-                type='linear',        # FUERZA la escala matemática
-                range=[0, max(eje_y) * 1.2], # Ajusta el techo al valor más alto + 20%
+                type='linear',        
+                range=[0, max(eje_y) * 1.2],
                 tickformat='.0%',
                 showgrid=True
             ),
+
             margin=dict(l=20, r=20, t=40, b=100),
             height=500,
             showlegend=False
-        )
+            )
 
-        # 4. Renderizado con limpieza de configuración
-        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-
-        
-
+       
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})   
     else:
         st.error("Prediction failed")
         
