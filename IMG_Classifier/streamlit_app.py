@@ -4,8 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 import numpy as np
-
-import plotly.express as px
+import plotly.graph_objects as go
 
 from src.ModelController import ModelController
 
@@ -42,45 +41,62 @@ if input_text is not None:
     # Run prediction directly on the text
     X, y_pred, y_scores, classes = ctrl.predict(input_text)
 
-    col1, col2 = st.columns([1, 2])
-
-    with col1:
-        st.caption("🧠 Your Prediction")
-
-        if y_pred is not None:
-            st.success(f"Predicted class: {y_pred}")
-            y_scores = np.array(y_scores)
-            if y_scores.ndim == 1:
-                y_scores = y_scores.reshape(1, -1)
-
-            exp_scores = np.exp(y_scores)
-            probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
-
-            st.caption("📊 Class Probabilities")
-            
-            data = pd.DataFrame({
-                "ODS": classes,
-                "valor": probs[0].flatten()
-            })
-
-        else:
-            st.error("Prediction failed")
-    colores = [
-    "#4E79A7",  "#F28E2B",  "#E15759",  "#76B7B2",  
-    "#59A14F", "#EDC948",  "#B07AA1",  "#FF9DA7",  "#9C755F", 
-    "#BAB0AC",  "#2F4B7C", "#A05195", "#D45087",  "#F95D6A",  
-    "#FF7C43", "#FFA600"  ]
-
-    fig = px.bar(
-                data,
-                x="ODS",
-                y="valor",
-                title="Probabilidades de Predicción por Categoría",
-                text=data["valor"].apply(lambda x: f"{x*100:.2f}%"))
     
-    fig.update_traces(marker_color=colores[:len(data)])
-    fig.update_traces(textposition="outside", textfont_size=12)
 
+    if y_pred is not None:
+
+        st.success(f"Predicted class: {y_pred}")
+
+        y_scores_flat = np.array(y_scores).flatten()
+        y_scores_stable = y_scores_flat - np.max(y_scores_flat)
+        exp_scores = np.exp(y_scores_stable)
+        probs = exp_scores / np.sum(exp_scores)
+
+        eje_x = [f" {int(c)}" for c in classes]
+        eje_y = [float(p) for p in probs]
+        textos = [f"{p*100:.1f}%" for p in probs]
+
+      
+        fig = go.Figure(data=[
+            go.Bar(
+                x=eje_x,
+                y=eje_y,
+                text=textos,
+                textposition='outside',
+                marker_color=[
+                    "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F", 
+                    "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC", 
+                    "#2F4B7C", "#A05195", "#D45087", "#F95D6A", "#FF7C43", "#FFA600"
+                ][:len(eje_x)]
+            )
+        ])
+
+    
+        fig.update_layout(
+            title="Probabilidades de Predicción",
+            xaxis=dict(
+                title="Objetivos de Desarrollo Sostenible (ODS)",
+                type='category',   
+                tickangle=-45
+            ),
+            yaxis=dict(
+                type='linear',        
+                range=[0, max(eje_y) * 1.2],
+                tickformat='.0%',
+                showgrid=True
+            ),
+
+            margin=dict(l=20, r=20, t=40, b=100),
+            height=500,
+            showlegend=False
+            )
+
+       
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})   
+    else:
+        st.error("Prediction failed")
+        
+    
     fig.update_layout(showlegend=True)
     fig.update_xaxes(tickmode="linear")
     st.plotly_chart(fig)

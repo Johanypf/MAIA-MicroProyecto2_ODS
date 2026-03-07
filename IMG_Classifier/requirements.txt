@@ -2,7 +2,7 @@ joblib
 matplotlib
 numpy
 pandas
-scikit-learn
+scikit-learn==1.6.1
 streamlit
 altair<5
 standard-imghdr
