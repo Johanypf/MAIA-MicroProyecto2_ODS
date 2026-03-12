@@ -97,6 +97,4 @@ if input_text is not None:
         st.error("Prediction failed")
         
     
-    #fig.update_layout(showlegend=True)
-    #fig.update_xaxes(tickmode="linear")
-    #st.plotly_chart(fig)
+   
